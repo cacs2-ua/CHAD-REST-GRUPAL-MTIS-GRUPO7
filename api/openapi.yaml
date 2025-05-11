@@ -1,0 +1,1922 @@
+openapi: 3.0.0
+info:
+  title: "OpenApi de Facturación Electrónica del Grupo 7 MTIS 2024-2025"
+  description: |
+    Esta maravillosa API permite gestionar los siguientes servicios:
+      - Factura (Servicio de entidad): 
+        * Crear 
+        * Consultar 
+        * Consultar estado 
+        * Modificar estado
+      - Notificación (Servicio de utilidad): 
+        * Enviar
+      - Documento (Servicio de utilidad): 
+        * Exportar factura a XML
+        * Exportar factura a PDF
+      - Validación (Servicio de utilidad): 
+        * Validar iban 
+        * Validar fechas 
+        * Validar si el email de una empresa existe en la BD 
+        * Validar si una factura existe en la BD
+      - Servicios iniciadores de composición:
+        * Emisión de factura
+        * Consulta de factura
+        * Subsanación de factura
+        * Anulación de factura
+        * Generación de reporte de estadísticas
+  version: 1.0.0
+servers:
+- url: http://localhost:12678/api
+paths:
+  /facturas/crear:
+    post:
+      tags:
+      - Factura
+      summary: Método asociado al servicio de entidad 'Factura'. Este método contiene
+        lógica reutilizable y genérica para poder crear facturas nuevas
+      operationId: facturaEntidadCrear
+      parameters:
+      - name: WSKey
+        in: header
+        description: Clave de autenticación WSKey
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FacturaRegistro"
+        required: true
+      responses:
+        "201":
+          description: Factura creada correctamente.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "400":
+          description: Bad Request.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Acceso no autorizado.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: No se tienen los suficientes permisos.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "405":
+          description: Método no permitido.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Error Interno del Servidor.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Servicio No Disponible.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      x-swagger-router-controller: creacion-factura-entidad
+  /facturas/consultar/numero-factura/{numero-factura}/email-empresa/{email-empresa}:
+    get:
+      tags:
+      - Factura
+      summary: Método asociado al servicio de entidad 'Factura'. Este método contiene
+        lógica reutilizable y genérica para poder consultar la estructura completa
+        de una factura.
+      operationId: facturaEntidadConsultar
+      parameters:
+      - name: WSKey
+        in: header
+        description: Clave de autenticación WSKey
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: numero-factura
+        in: path
+        description: Número identificativo de la factura que se quiere consultar
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: email-empresa
+        in: path
+        description: Email de la empresa
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: email
+      responses:
+        "200":
+          description: Factura consultada correctamente.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FacturaConsulta"
+        "400":
+          description: Bad Request.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Acceso no autorizado.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: No se tienen los suficientes permisos.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Factura no encontrada.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FacturaNoEncontradaError"
+        "405":
+          description: Método no permitido.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Error Interno del Servidor.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Servicio No Disponible.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      x-swagger-router-controller: consulta-factura-entidad
+  /facturas/consultar-estado/numero-factura/{numero-factura}/email-empresa/{email-empresa}:
+    get:
+      tags:
+      - Factura
+      summary: Método asociado al servicio de entidad 'Factura'. Este método contiene
+        lógica reutilizable y genérica para poder consultar el estado de una factura.
+      operationId: facturaEntidadConsultarEstado
+      parameters:
+      - name: WSKey
+        in: header
+        description: Clave de autenticación WSKey
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: numero-factura
+        in: path
+        description: Número identificativo de la factura de la que se quiere consultar el estado
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: email-empresa
+        in: path
+        description: Email de la empresa
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: email
+      responses:
+        "200":
+          description: Estado de la factura consultado correctamente.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FacturaConsultaEstado"
+        "400":
+          description: Bad Request.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Acceso no autorizado.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: No se tienen los suficientes permisos.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Factura no encontrada.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FacturaNoEncontradaError"
+        "405":
+          description: Método no permitido.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Error Interno del Servidor.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Servicio No Disponible.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      x-swagger-router-controller: consulta-factura-estado-entidad
+  /facturas/modificar-estado:
+    put:
+      tags:
+      - Factura
+      summary: Método asociado al servicio de entidad 'Factura'. Este método contiene
+        lógica reutilizable y genérica para poder modificar el estado de una factura.
+      operationId: facturaEntidadModificarEstado
+      parameters:
+      - name: WSKey
+        in: header
+        description: Clave de autenticación WSKey
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FacturaModificacionEstado"
+      responses:
+        "200":
+          description: Estado de la factura modificado correctamente.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "400":
+          description: Bad Request.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Acceso no autorizado.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: No se tienen los suficientes permisos.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Factura no encontrada.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FacturaNoEncontradaError"
+        "405":
+          description: Método no permitido.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Error Interno del Servidor.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Servicio No Disponible.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      x-swagger-router-controller: modificacion-factura-estado-entidad
+  /notificaciones/enviar:
+    post:
+      tags:
+      - Notificacion
+      summary: Método asociado al servicio de utilidad 'Notificaciones'. Este método
+        contiene lógica reutilizable y genérica para enviar mensajes.
+      operationId: notificacionUtilityEnviarMensaje
+      parameters:
+      - name: WSKey
+        in: header
+        description: Clave de autenticación WSKey
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EnviarNotificacionRequest"
+      responses:
+        "200":
+          description: Notificacion enviada correctamente.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "400":
+          description: Bad Request.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Acceso no autorizado.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: No se tienen los suficientes permisos.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "405":
+          description: Método no permitido.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Error Interno del Servidor.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Servicio No Disponible.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      x-swagger-router-controller: notificacion-mensaje-utility
+  /documentos/exportar-xml/numero-factura/{numero-factura}/email-empresa/{email-empresa}:
+    post:
+      tags:
+      - Documento
+      summary: Método asociado al servicio de utilidad 'Documentos'. Este método contiene
+        lógica reutilizable y genérica para exportar facturas a XML.
+      operationId: documentoUtilityExportarFacturaXML
+      parameters:
+      - name: WSKey
+        in: header
+        description: Clave de autenticación WSKey
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: numero-factura
+        in: path
+        description: Número identificativo de la factura que se quiere exportar a XML.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: email-empresa
+        in: path
+        description: Email de la empresa
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: email
+      responses:
+        "200":
+          description: Factura exportada correctamente a XML.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "400":
+          description: Bad Request.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Acceso no autorizado.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: No se tienen los suficientes permisos.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Factura no encontrada.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FacturaNoEncontradaError"
+        "405":
+          description: Método no permitido.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Error Interno del Servidor.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Servicio No Disponible.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      x-swagger-router-controller: documento-exportar-factura-xml-utility
+  /documentos/exportar-pdf/numero-factura/{numero-factura}/email-empresa/{email-empresa}:
+    post:
+      tags:
+      - Documento
+      summary: Método asociado al servicio de utilidad 'Documentos'. Este método contiene
+        lógica reutilizable y genérica para exportar facturas a PDF.
+      operationId: documentoUtilityExportarFacturaPDF
+      parameters:
+      - name: WSKey
+        in: header
+        description: Clave de autenticación WSKey
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: numero-factura
+        in: path
+        description: Número identificativo de la factura que se quiere exportar a PDF.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: email-empresa
+        in: path
+        description: Email de la empresa
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: email
+      responses:
+        "200":
+          description: Factura exportada correctamente a PDF.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "400":
+          description: Bad Request.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Acceso no autorizado.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: No se tienen los suficientes permisos.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Factura no encontrada.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FacturaNoEncontradaError"
+        "405":
+          description: Método no permitido.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Error Interno del Servidor.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Servicio No Disponible.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      x-swagger-router-controller: documento-exportar-factura-pdf-utility
+  /validaciones/fechas:
+    post:
+      tags:
+      - Validacion
+      summary: Método asociado al servicio de utilidad 'Validacion'. Este método contiene
+        lógica reutilizable para poder validar un rango de fechas introducido.
+      operationId: fechas
+      parameters:
+      - name: WSKey
+        in: header
+        description: Clave de autenticación WSKey
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SolicitudValidacionFechas"
+      responses:
+        "200":
+          description: Rango de fechas válido.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FechasFacturacionValidasResponse"
+        "400":
+          description: Rango de fechas no válido.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FechasFacturacionNoValidasError"
+        "401":
+          description: Acceso no autorizado.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: No se tienen los suficientes permisos.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "405":
+          description: Método no permitido.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Error Interno del Servidor.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Servicio No Disponible.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      x-swagger-router-controller: validacion-fechas-utility
+      
+  /validaciones/factura-existe:
+    post:
+      tags:
+      - Validacion
+      summary: Método asociado al servicio de utilidad 'Validacion'. Este método contiene
+        lógica reutilizable para poder verificar si una factura existe a partir de su número de factura.
+      operationId: validacionFacturaExiste
+      parameters:
+      - name: WSKey
+        in: header
+        description: Clave de autenticación WSKey
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SolicitudVerificarExisteFactura"
+      responses:
+        "200":
+          description: La factura existe dentro del sistema. 
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FacturaSiExisteResponse"
+        "400":
+          description: Bad Request.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Acceso no autorizado.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: No se tienen los suficientes permisos.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Factura no encontrada.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FacturaNoExisteResponse"
+        "405":
+          description: Método no permitido.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Error Interno del Servidor.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Servicio No Disponible.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      x-swagger-router-controller: validacion-factura-existe-utility
+  /validaciones/empresa-existe:
+    post:
+      tags:
+      - Validacion
+      summary: Método asociado al servicio de utilidad 'Validacion'. Este método contiene
+        lógica reutilizable para poder verificar si una empresa está registrada dentro
+        del sistema.
+      operationId: validacionEmpresaExiste
+      parameters:
+      - name: WSKey
+        in: header
+        description: Clave de autenticación WSKey
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SolicitudVerificarExisteEmpresa"
+      responses:
+        "200":
+          description: La empresa existe dentro del sistema.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmpresaSiExisteResponse"
+        "400":
+          description: Bad Request.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Acceso no autorizado.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: No se tienen los suficientes permisos.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Empresa no encontrada.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmpresaNoExisteResponse"
+        "405":
+          description: Método no permitido.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Error Interno del Servidor.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Servicio No Disponible.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      x-swagger-router-controller: validacion-empresa-existe-utility
+  /emision-facturas/iniciar:
+    post:
+      tags:
+      - Emision de factura
+      summary: Iniciar una tarea de emisión de factura
+      operationId: emisionFactura
+      parameters:
+      - name: WSKey
+        in: header
+        description: Clave de autenticación WSKey
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SolicitudEmisionFactura"
+        required: true
+      responses:
+        "200":
+          description: Emisión de la factura realizada correctamente.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "400":
+          description: Bad Request.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Acceso no autorizado.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: No se tienen los suficientes permisos.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "405":
+          description: Método no permitido.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Error Interno del Servidor.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Servicio No Disponible.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      x-swagger-router-controller: emision-factura
+  /consulta-facturas/iniciar:
+    post:
+      tags:
+      - Consulta de factura
+      summary: Iniciar una tarea de consulta de factura
+      operationId: consultaFactura
+      parameters:
+      - name: WSKey
+        in: header
+        description: Clave de autenticación WSKey
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SolicitudConsultaFactura"
+        required: true
+      responses:
+        "200":
+          description: Consulta de la factura realizada correctamente.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FacturaConsulta"
+        "400":
+          description: Bad Request.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Acceso no autorizado.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: No se tienen los suficientes permisos.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Factura no encontrada.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "405":
+          description: Método no permitido.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Error Interno del Servidor.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Servicio No Disponible.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      x-swagger-router-controller: consulta-factura
+  /subsanacion-facturas/iniciar:
+    post:
+      tags:
+      - Subsanacion de factura
+      summary: Iniciar una tarea de subsanación de una factura
+      operationId: subsanacionFactura
+      parameters:
+      - name: WSKey
+        in: header
+        description: Clave de autenticación WSKey
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SolicitudSubsanacionFactura"
+        required: true
+      responses:
+        "200":
+          description: Subsanación de la factura realizada correctamente.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "400":
+          description: Bad Request.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Acceso no autorizado.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: No se tienen los suficientes permisos.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Factura no encontrada.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FacturaNoEncontradaError"
+        "405":
+          description: Método no permitido.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Error Interno del Servidor.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Servicio No Disponible.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      x-swagger-router-controller: subsanacion-factura
+  /anulacion-facturas/iniciar:
+    post:
+      tags:
+      - Anulacion de factura
+      summary: Iniciar una tarea de anulación de una factura.
+      operationId: anulacionFactura
+      parameters:
+      - name: WSKey
+        in: header
+        description: Clave de autenticación WSKey
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SolicitudAnulacionFactura"
+        required: true
+      responses:
+        "200":
+          description: Anulación de la factura realizada correctamente.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "400":
+          description: Bad Request.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Acceso no autorizado.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: No se tienen los suficientes permisos.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Factura no encontrada.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FacturaNoEncontradaError"
+        "405":
+          description: Método no permitido.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Error Interno del Servidor.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Servicio No Disponible.
+          headers:
+            salida:
+              $ref: "#/components/headers/salidaHeader"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      x-swagger-router-controller: anulacion-factura
+components:
+  schemas:
+    FacturaRegistro:
+      required:
+      - numeroFactura
+      - baseImponible
+      - iva
+      - moneda
+      - tipo
+      - estado
+      - esSubsanable
+      - fechaDesdeFacturacion
+      - fechaHastaFacturacion
+      - fechaEmision
+      type: object
+      properties:
+        numeroFactura:
+          type: string
+          description: Número identificativo de la factura.
+        baseImponible:
+          type: number
+          format: double
+          description: Base imponible de la factura.
+        iva:
+          type: number
+          format: double
+          description: IVA de la factura.
+        moneda:
+          type: string
+          description: Moneda que se utiliza en la factura.
+        tipo:
+          type: string
+          description: "Tipo de la factura ('ORDINARIA', 'RECTIFICATIVA')."
+          enum:
+            - ORDINARIA
+            - RECTIFICATIVA
+        estado:
+          type: string
+          description: "Estado de la factura ('VALIDA', 'RECTIFICADA', 'INVALIDA', 'ANULADA')."
+          enum:
+            - VALIDA
+            - RECTIFICADA
+            - INVALIDA
+            - ANULADA
+        esSubsanable:
+          type: boolean
+          description: Flag que indica si una factura es subsanable.
+        haSidoSubsanada:
+          type: boolean
+          description: Flag que indica si una factura ha sido subsanada.
+        fechaRectificacion:
+          type: string
+          format: date-time
+          description: Fecha de la subsanación de la factura.
+        fechaDesdeFacturacion:
+          type: string
+          format: date
+          description: Fecha en la que comienza el periodo de facturación.
+        fechaHastaFacturacion:
+          type: string
+          format: date
+          description: Fecha en la que finaliza el periodo de facturación.
+        fechaEmision:
+          type: string
+          format: date
+          description: Fecha en la que se ha emitido la factura.
+      example:
+        numeroFactura: "FAC-178965412674769490"
+        baseImponible: 1250.75
+        iva: 0.21
+        moneda: "EURO"
+        tipo: "ORDINARIA"
+        estado: "VALIDA"
+        esSubsanable: true
+        haSidoSubsanada: true
+        fechaRectificacion: "2025-05-10T14:30:45"
+        fechaDesdeFacturacion: "2025-04-01"
+        fechaHastaFacturacion: "2025-05-01"
+        fechaEmision: "2025-05-10T14:30:50"
+    FacturaConsulta:
+      required:
+      - numeroFactura
+      - baseImponible
+      - iva
+      - moneda
+      - tipo
+      - estado
+      - esSubsanable
+      - haSidoSubsanada
+      - fechaEmision
+      - fechaDesdeFacturacion
+      - fechaHastaFacturacion
+      type: object
+      properties:
+        numeroFactura:
+          type: string
+          description: Número identificativo y único de la factura.
+        baseImponible:
+          type: number
+          description: Base imponible de la factura.
+          format: double
+        iva:
+          type: number
+          format: double
+          description: IVA de la factura.
+        moneda:
+          type: string
+          description: Moneda de la factura.
+        tipo:
+          type: string
+          description: "Tipo de la factura ('ORDINARIA', 'RECTIFICATIVA')."
+          enum:
+            - ORDINARIA
+            - RECTIFICATIVA
+        estado:
+          type: string
+          description: "Estado de la factura ('VALIDA', 'RECTIFICADA', 'INVALIDA', 'ANULADA')."
+          enum:
+            - VALIDA
+            - RECTIFICADA
+            - INVALIDA
+            - ANULADA
+        esSubsanable:
+          type: boolean
+          description: Flag que indica si una factura es subsanable.
+        haSidoSubsanada:
+          type: boolean
+          description: Flag que indica si una factura ha sido subsanada.
+        fechaRectificacion:
+          type: string
+          format: date-time
+          description: Fecha de rectificación de la factura.
+        fechaEmision:
+          type: string
+          format: date-time
+          description: Fecha de emisión de la factura.
+        fechaDesdeFacturacion:
+          type: string
+          format: date
+          description: Fecha de que se corresponde con el inicio del periodo de facturación.
+        fechaHastaFacturacion:
+          type: string
+          format: date
+          description: Fecha de que se corresponde con el final del periodo de facturación.
+      example:
+        numeroFactura: "FAC-178965412674769490"
+        baseImponible: 1250.75
+        iva: 0.21
+        moneda: "EURO"
+        tipo: "ORDINARIA"
+        estado: "VALIDA"
+        esSubsanable: true
+        haSidoSubsanada: true
+        fechaRectificacion: "2025-05-10T14:30:45"
+        fechaEmision: "2025-05-01T11:45:56"
+        fechaDesdeFacturacion: "2025-04-01"
+        fechaHastaFacturacion: "2025-05-01"
+    FacturaConsultaEstado:
+      required:
+      - estado
+      type: object
+      properties:
+        estado:
+          type: string
+          description: "Estado de la factura ('VALIDA', 'RECTIFICADA', 'INVALIDA', 'ANULADA')."
+          enum:
+            - VALIDA
+            - RECTIFICADA
+            - INVALIDA
+            - ANULADA
+      example:
+        estado: "VALIDA"
+    FacturaModificacionEstado:
+      required:
+      - uuid
+      - estado
+      type: object
+      properties:
+        uuid:
+          type: string
+          description: Uuid de la factura que se quiere modificar.
+        estado:
+          type: string
+          description: "Estado de la factura ('VALIDA', 'RECTIFICADA', 'INVALIDA', 'ANULADA')."
+          enum:
+            - VALIDA
+            - RECTIFICADA
+            - INVALIDA
+            - ANULADA
+      example:
+        uuid: "da084cf2-cf45-4dd8-a984-a015c8860bca"
+        estado: "VALIDA"
+    SolicitudEmisionFactura:
+      required:
+      - nombreEmpresa
+      - emailEmpresa
+      - identificadorFiscalEmpresa
+      - identificadorEmpleador
+      - ibanEmpresa
+      - paisEmpresa
+      - direccionCompletaFacturacion
+      - codigoPostal
+      - numeroFactura
+      - baseImponible
+      - iva
+      - moneda
+      - fechaDesdeFacturacion
+      - fechaHastaFacturacion
+      type: object
+      properties:
+        nombreEmpresa:
+          type: string
+          description: Nombre de la empresa.
+        emailEmpresa:
+          type: string
+          format: email
+          description: Email de la empresa.
+        identificadorFiscalEmpresa:
+          type: string
+          description: Identificador Fiscal de la empresa.
+        identificadorEmpleador:
+          type: string
+          description: Identificador del empleador.
+        ibanEmpresa:
+          type: string
+          description: IBAN de la empresa.
+        paisEmpresa:
+          type: string
+          description: País de la empresa.
+        provinciaEmpresa:
+          type: string
+          description: Provincia de la empresa.
+        localidadEmpresa:
+          type: string
+          description: Localidad de la empresa.
+        direccionCompletaFacturacion:
+          type: string
+          description: Dirección completa de la facturación.
+        codigoPostal:
+          type: string
+          description: Código Postal de la empresa.
+        numeroFactura:
+          type: string
+          description: Número identificativo de la factura.
+        baseImponible:
+          type: number
+          format: double
+          description: Base imponible de la factura.
+        iva:
+          type: number
+          format: double
+          description: IVA de la factura.
+        moneda:
+          type: string
+          description: Moneda que se utiliza en la factura.
+        fechaDesdeFacturacion:
+          type: string
+          format: date
+          description: Fecha en la que comienza el periodo de facturación.
+        fechaHastaFacturacion:
+          type: string
+          format: date
+          description: Fecha en la que finaliza el periodo de facturación.
+      example:
+        nombreEmpresa: "NTT Data"
+        emailEmpresa: "ntt@data.es"
+        identificadorFiscalEmpresa: "A54376132"
+        identificadorEmpleador: "13/999888777"
+        ibanEmpresa: "ES7120801348517501148317"
+        paisEmpresa: "España"
+        provinciaEmpresa: "Alicante (Campo Opcional)"
+        localidadEmpresa: "San Vicente del Raspeig (Cmpo Opcional)"
+        direccionCompletaFacturacion: "Calle Santo Tomás, Nº4, Bloque C2, 5ºIz"
+        codigoPostal: "03690"
+        numeroFactura: "FAC-178965412674769490"
+        baseImponible: 1250.75
+        iva: 0.21
+        moneda: "EURO"
+        fechaDesdeFacturacion: "2025-04-01"
+        fechaHastaFacturacion: "2025-04-01"
+    SolicitudSubsanacionFactura:
+      required:
+      - nombreEmpresa
+      - emailEmpresa
+      - identificadorFiscalEmpresa
+      - identificadorEmpleador
+      - ibanEmpresa
+      - paisEmpresa
+      - direccionCompletaFacturacion
+      - codigoPostal
+      - numeroFactura
+      - baseImponible
+      - iva
+      - moneda
+      - fechaDesdeFacturacion
+      - fechaHastaFacturacion
+      type: object
+      properties:
+        nombreEmpresa:
+          type: string
+          description: Nombre de la empresa.
+        emailEmpresa:
+          type: string
+          format: email
+          description: Email de la empresa.
+        identificadorFiscalEmpresa:
+          type: string
+          description: Identificador Fiscal de la empresa.
+        identificadorEmpleador:
+          type: string
+          description: Identificador del empleador.
+        ibanEmpresa:
+          type: string
+          description: IBAN de la empresa.
+        paisEmpresa:
+          type: string
+          description: País de la empresa.
+        provinciaEmpresa:
+          type: string
+          description: Provincia de la empresa.
+        localidadEmpresa:
+          type: string
+          description: Localidad de la empresa.
+        direccionCompletaFacturacion:
+          type: string
+          description: Dirección completa de la facturación.
+        codigoPostal:
+          type: string
+          description: Código Postal de la empresa.
+        numeroFactura:
+          type: string
+          description: Número identificativo de la factura.
+        baseImponible:
+          type: number
+          format: double
+          description: Base imponible de la factura.
+        iva:
+          type: number
+          format: double
+          description: IVA de la factura.
+        moneda:
+          type: string
+          description: Moneda que se utiliza en la factura.
+        fechaDesdeFacturacion:
+          type: string
+          format: date
+          description: Fecha en la que comienza el periodo de facturación.
+        fechaHastaFacturacion:
+          type: string
+          format: date
+          description: Fecha en la que finaliza el periodo de facturación.
+      example:
+        nombreEmpresa: "NTT Data"
+        emailEmpresa: "ntt@data.es"
+        identificadorFiscalEmpresa: "A54376132"
+        identificadorEmpleador: "13/999888777"
+        ibanEmpresa: "ES7120801348517501148317"
+        paisEmpresa: "España"
+        provinciaEmpresa: "Alicante (Campo Opcional)"
+        localidadEmpresa: "San Vicente del Raspeig (Cmpo Opcional)"
+        direccionCompletaFacturacion: "Calle Santo Tomás, Nº4, Bloque C2, 5ºIz"
+        codigoPostal: "03690"
+        numeroFactura: "FAC-178965412674769490"
+        baseImponible: 1250.75
+        iva: 0.21
+        moneda: "EURO"
+        fechaDesdeFacturacion: "2025-04-01"
+        fechaHastaFacturacion: "2025-04-01"
+    SolicitudConsultaFactura:
+      required:
+      - emailEmpresa
+      - numeroFactura
+      type: object
+      properties:
+        numeroFactura:
+          type: string
+          description: Identificador único de cada factura
+        emailEmpresa:
+          type: string
+          description: Email de la empresa que emitió la factura
+      example:
+        numeroFactura: FAC-178965412674769490
+        emailEmpresa: facturacion@empresa.com
+    SolicitudAnulacionFactura:
+      required:
+      - emailEmpresa
+      - numeroFactura
+      type: object
+      properties:
+        numeroFactura:
+          type: string
+          description: Identificador único de cada factura
+        emailEmpresa:
+          type: string
+          description: Email de la empresa que emitió la factura
+      example:
+        numeroFactura: FAC-178965412674769490
+        emailEmpresa: facturacion@empresa.com
+    SuccessResponse:
+      type: object
+      properties:
+        mensaje:
+          type: string
+      example:
+        mensaje: Operación realizada con éxito.
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      example:
+        error: mensaje_de_error
+    FacturaNoEncontradaError:
+      type: object
+      properties:
+        error:
+          type: string
+      example:
+        error: Factura no encontrada
+    SolicitudVerificarExisteFactura:
+      type: object
+      required:
+        - numeroFactura
+        - emailEmpresa
+      properties:
+        numeroFactura:
+          type: string
+        emailEmpresa:
+          type: string
+          format: email
+      example:
+        numeroFactura: "FAC-178965412674769490"
+        emailEmpresa: "ntt@data.gmail.com"
+    SolicitudVerificarExisteEmpresa:
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+      example:
+        email: facturacion@empresa.com
+    SolicitudValidacionFechas:
+      type: object
+      required:
+        - fechaDesde
+        - fechaHasta
+      properties:
+        fechaDesde:
+          type: string
+          format: date
+          description: "Fecha de que se corresponde con el inicio del periodo de facturación."
+        fechaHasta:
+          type: string
+          format: date
+          description: "Fecha de que se corresponde con el final del periodo de facturación."
+      example:
+        fechaDesde: "2025-04-01"
+        fechaHasta: "2025-05-01"
+    FechasFacturacionValidasResponse:
+      type: object
+      properties:
+        mensaje:
+          type: string
+      example:
+        mensaje: El rango de fechas sí es válido.
+    FechasFacturacionNoValidasError:
+      type: object
+      properties:
+        error:
+          type: string
+      example:
+        error: El rango de fechas no es válido.
+    FacturaSiExisteResponse:
+      type: object
+      properties:
+        mensaje:
+          type: string
+      example:
+        mensaje: La factura sí existe en el sistema
+    FacturaNoExisteResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      example:
+        error: La factura no existe en el sistema
+    EmpresaSiExisteResponse:
+      type: object
+      properties:
+        mensaje:
+          type: string
+      example:
+        mensaje: La empresa sí existe en el sistema
+    EmpresaNoExisteResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      example:
+        error: La empresa no existe en el sistema
+    EnviarNotificacionRequest:
+      type: object
+      required:
+        - de
+        - para
+        - asunto
+        - cuerpo
+      properties:
+        de:
+          type: string
+          format: email
+          description: Email desde que se envia el mensaje.
+        para:
+          type: string
+          format: email
+          description: Email destinatario.
+        asunto:
+          type: string
+          description: Asunto del mensaje.
+        cuerpo:
+          type: string
+          description: Cuerpo del mensaje.
+      example:
+        de: "agencia@tributaria.com"
+        para: "ntt@data.com"
+        asunto: "Factura subsanada correctamente"
+        cuerpo: "El proceso de subsanación para su factura ha sido completado con éxito."
+  parameters:
+    WSKey:
+      name: WSKey
+      in: header
+      description: Clave de autenticación WSKey
+      required: true
+      style: simple
+      explode: false
+      schema:
+        type: string
+  headers:
+    salidaHeader:
+      description: "Información detallada de la ejecución del método, incluyendo salidas\
+        \ correctas y errores."
+      style: simple
+      explode: false
+      schema:
+        type: string

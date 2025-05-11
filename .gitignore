@@ -1,0 +1,68 @@
+# Node.js
+node_modules/
+# Si usas pnpm
+.pnpm/
+# Cachés de yarn v2+
+.yarn/**/cache
+.yarn/**/unplugged
+.yarn/**/build-state.yml
+.pnp.* 
+
+# Lockfiles
+# — normalmente conviene versionar package-lock.json o yarn.lock,
+#   así que quita de aquí el que uses en tu flujo de trabajo:
+# package-lock.json
+# yarn.lock
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-error.log*
+
+# Cobertura de tests
+coverage/
+.nyc_output/
+
+# Directorios de build
+dist/
+build/
+out/
+
+# Archivos temporales
+*.tmp
+*.temp
+
+# Entorno
+.env
+.env.*      # .env.local, .env.test, etc.
+
+# OpenAPI Generator
+.openapi-generator/         # configuraciones internas
+*.openapi-generator-ignore # si tienes este fichero
+
+# Herramientas de test/cache
+.jest/
+.vitest/                    # si usas Vitest
+jest.config.js
+
+# IDEs y editores
+.idea/
+*.sublime-project
+*.sublime-workspace
+*~                           # editores estilo Emacs/Vim
+*.swp
+
+# S.O.
+.DS_Store
+Thumbs.db
+
+# ESLint, TypeScript cache
+.eslintcache
+*.tsbuildinfo
+
+# Firebase
+.firebase/
+
+# Docker
+docker-compose.override.yml  # si no quieres versionar overrides locales
