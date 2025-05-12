@@ -510,7 +510,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-      x-swagger-router-controller: notificacion-mensaje-utility
+      x-swagger-router-controller: Notificacion
   /documentos/exportar-xml/numero-factura/{numero-factura}/email-empresa/{email-empresa}:
     post:
       tags:
