@@ -810,7 +810,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-      x-swagger-router-controller: validacion-fechas-utility
+      x-swagger-router-controller: Validacion
       
   /validaciones/factura-existe:
     post:
@@ -906,7 +906,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-      x-swagger-router-controller: validacion-factura-existe-utility
+      x-swagger-router-controller: Validacion
   /validaciones/empresa-existe:
     post:
       tags:
@@ -1002,7 +1002,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-      x-swagger-router-controller: validacion-empresa-existe-utility
+      x-swagger-router-controller: Validacion
   /emision-facturas/iniciar:
     post:
       tags:
