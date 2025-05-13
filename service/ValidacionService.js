@@ -14,16 +14,12 @@ exports.fechas = function(body,wSKey) {
   return new Promise(async function(resolve, reject) {
     var result = {};
     result['application/json'] = {
-    "resultado" : true,
-    "mensaje": "La fecha es valida",
-    "status": 200
+    "resultado" : true
     };
     try {
       const WSKeyDb = await DB.obtenerRestKey();
       if (wSKey != WSKeyDb.valor){
         return reject({
-          status: 403,
-          mensaje: "La Wskey no es valida",
           resultado : false
         });
       }
@@ -33,16 +29,12 @@ exports.fechas = function(body,wSKey) {
 
     if (!regex.test(fechaDesde) || !regex.test(fechaHasta)) {
       return reject({
-        status: 401,
-        mensaje: "Fecha(s) inválida(s). El formato debe ser yyyy/MM/dd.",
         resultado : false
       });
     }
     
     if(new Date(fechaDesde) >= new Date(fechaHasta)){
       return reject({
-        status: 402,
-        mensaje: "La fecha desde es anterior a fecha hasta.",
         resultado : false
       })
     }
@@ -74,16 +66,12 @@ exports.validacionEmpresaExiste = function(body,wSKey) {
   return new Promise(async function (resolve, reject) {
     var result = {};
     result['application/json'] = {
-      "status":200,
-      "mensaje" : "La empresa sí existe en el sistema",
       "resultado":true
     };
     try {
       const WSKeyDb = await DB.obtenerRestKey();
       if (wSKey != WSKeyDb.valor){
         return reject({
-          status: 403,
-          mensaje: "La Wskey no es valida",
           resultado : false
         });
       }
@@ -93,8 +81,6 @@ exports.validacionEmpresaExiste = function(body,wSKey) {
 
       if (!email || !regex.test(email)){
         return reject({
-          status: 402,
-          mensaje: "El email no es valido",
           resultado : false
         });
       }
@@ -102,8 +88,6 @@ exports.validacionEmpresaExiste = function(body,wSKey) {
 
       if(!empresa){
         return reject({
-          status: 400,
-          mensaje: "La empresa con ese email no existe",
           resultado : false
         });
       }
@@ -137,16 +121,12 @@ exports.validacionFacturaExiste = function(body,wSKey) {
   return new Promise(async function(resolve, reject) {
     var result = {};
     result['application/json'] = {
-      "status":200,
-      "mensaje" : "La factura sí existe en el sistema",
       "resultado":true
     };
     try {
       const WSKeyDb = await DB.obtenerRestKey();
       if (wSKey != WSKeyDb.valor){
         return reject({
-          status: 403,
-          mensaje: "La Wskey no es valida",
           resultado : false
         });
       }
@@ -157,8 +137,6 @@ exports.validacionFacturaExiste = function(body,wSKey) {
 
       if (!email || !regex.test(email)){
         return reject({
-          status: 402,
-          mensaje: "El email no es valido",
           resultado : false
         });
       }
@@ -166,8 +144,6 @@ exports.validacionFacturaExiste = function(body,wSKey) {
 
       if(!empresa){
         return reject({
-          status: 400,
-          mensaje: "La empresa con ese email no existe",
           resultado : false
         });
       }
@@ -176,8 +152,6 @@ exports.validacionFacturaExiste = function(body,wSKey) {
 
       if(!facturaDB){
         return reject({
-          status: 400,
-          mensaje: "La factura con ese numero de factura no existe en esa empresa",
           resultado : false
         });
       }
