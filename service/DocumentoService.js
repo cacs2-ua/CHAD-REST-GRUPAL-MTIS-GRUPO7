@@ -93,8 +93,24 @@ exports.documentoUtilityExportarFacturaXML = function(wSKey,numeroFactura,emailE
      try {
       const factura = await validarYObtenerFactura(wSKey, numeroFactura, emailEmpresa);
 
+      const facturaParaXml = {
+        ...factura,
+        fecha_desde_facturacion: factura.fecha_desde_facturacion
+          ? factura.fecha_desde_facturacion.toISOString()
+          : '',
+        fecha_emision: factura.fecha_emision
+          ? factura.fecha_emision.toISOString()
+          : '',
+        fecha_hasta_facturacion: factura.fecha_hasta_facturacion
+          ? factura.fecha_hasta_facturacion.toISOString()
+          : '',
+        fecha_rectificacion: factura.fecha_rectificacion
+          ? factura.fecha_rectificacion.toISOString()
+          : ''
+      };
+
       const builder = new xml2js.Builder({ headless: true, renderOpts: { pretty: true } });
-      const xmlObj = { Factura: factura };
+      const xmlObj = { Factura: facturaParaXml };
       const xml     = builder.buildObject(xmlObj);
 
       const timestamp = formatTimestamp(new Date());
