@@ -424,7 +424,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-      x-swagger-router-controller: modificacion-factura-estado-entidad
+      x-swagger-router-controller: Factura
   /notificaciones/enviar:
     post:
       tags:
@@ -1399,6 +1399,7 @@ components:
           description: Id de la empresa.
         facturaRectificadaId:
           type: number
+          nullable: true
           description: Id de la factura rectificada (opcional).
         baseImponible:
           type: number
@@ -1434,6 +1435,7 @@ components:
         fechaRectificacion:
           type: string
           format: date-time
+          nullable: true       # ⇦ esto permite null
           description: Fecha de la subsanación de la factura.
         fechaDesdeFacturacion:
           type: string
@@ -1514,6 +1516,7 @@ components:
         fechaRectificacion:
           type: string
           format: date-time
+          nullable: true       # ⇦ esto permite null
           description: Fecha de rectificación de la factura.
         fechaEmision:
           type: string
