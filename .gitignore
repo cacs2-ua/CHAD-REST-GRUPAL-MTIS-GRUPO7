@@ -16,7 +16,7 @@ node_modules/
 
 # Carpetas
 exported_xml/*
-
+exported_pdf/*
 # Logs
 logs/
 *.log

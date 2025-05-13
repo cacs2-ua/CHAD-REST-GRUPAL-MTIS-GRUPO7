@@ -5,6 +5,7 @@ var SMTP = require('../ConexionFakeSMTP/ConexionFakeSMTP');
 const fs        = require('fs');
 const path      = require('path');
 const xml2js    = require('xml2js');
+const PDFDocument = require('pdfkit');
 
 function formatTimestamp(date) {
   const pad = n => String(n).padStart(2, '0');
@@ -48,9 +49,30 @@ exports.documentoUtilityExportarFacturaPDF = function(wSKey,numeroFactura,emailE
   return new Promise(async (resolve, reject) => {
     try {
       const factura = await validarYObtenerFactura(wSKey, numeroFactura, emailEmpresa);
-      console.log(factura);
 
-      resolve({ mensaje: { mensaje: 'Operación realizada con éxito' }, status: 200 });
+      const timestamp = formatTimestamp(new Date());
+      const filename  = `${numeroFactura}_${timestamp}.pdf`;
+      const dir       = path.join(__dirname, '../exported_pdf');
+      const filepath  = path.join(dir, filename);
+      await fs.promises.mkdir(dir, { recursive: true });
+
+      const doc = new PDFDocument();
+      const stream = fs.createWriteStream(filepath);
+
+      stream.on('error', err => reject(manejarError(err)));
+
+      doc.pipe(stream);
+      doc.fontSize(18).text(`Factura ${numeroFactura}`, { underline: true });
+      doc.moveDown();
+      Object.entries(factura).forEach(([key, val]) => {
+        doc.fontSize(12).text(`${key}: ${val}`);
+      });
+      doc.end();
+
+
+      stream.on('finish', () => {
+        resolve({ mensaje: { mensaje: 'Operación realizada con éxito' }, status: 200 });
+      });
     } catch (err) {
       reject(manejarError(err));
     }
@@ -70,7 +92,6 @@ exports.documentoUtilityExportarFacturaXML = function(wSKey,numeroFactura,emailE
   return new Promise(async function(resolve, reject) {
      try {
       const factura = await validarYObtenerFactura(wSKey, numeroFactura, emailEmpresa);
-      console.log(factura);
 
       const builder = new xml2js.Builder({ headless: true, renderOpts: { pretty: true } });
       const xmlObj = { Factura: factura };
