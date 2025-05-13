@@ -1,4 +1,6 @@
 'use strict';
+const FacturaRepository = require('../ConexionDB/FacturaRepository');
+const utils = require('../utils/Utils.js'); // IMPORTAR utils/Utils.js
 
 
 /**
@@ -9,30 +11,53 @@
  * emailEmpresa String Email de la empresa
  * returns FacturaConsulta
  **/
-exports.facturaEntidadConsultar = function(wSKey,numeroFactura,emailEmpresa) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-  "numeroFactura" : "FAC-178965412674769490",
-  "baseImponible" : 1250.75,
-  "iva" : 0.21,
-  "moneda" : "EURO",
-  "tipo" : "ORDINARIA",
-  "estado" : "VALIDA",
-  "esSubsanable" : true,
-  "haSidoSubsanada" : true,
-  "fechaRectificacion" : "2025-05-10T14:30:45",
-  "fechaEmision" : "2025-05-01T11:45:56",
-  "fechaDesdeFacturacion" : "2025-04-01",
-  "fechaHastaFacturacion" : "2025-05-01"
-};
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
+exports.facturaEntidadConsultar = async function(wSKey, numeroFactura, emailEmpresa) {
+  try {
+    await utils.validarWSKey(wSKey); 
+    const empresaId = await FacturaRepository.obtenerIdEmpresaPorEmail(emailEmpresa);
+    if (!empresaId) {
+      throw { status: 404,
+        error: "Empresa no encontrada" 
+      };
     }
-  });
-}
+
+    const factura = await FacturaRepository.obtenerFacturaPorNumeroYEmpresa(numeroFactura, empresaId);
+    if (!factura) {
+      throw { status: 404,
+        error: "Factura no encontrada" 
+      };
+    }
+
+    // Formatear las fechas
+    const fechaRectificacion = new Date(factura.fecha_rectificacion).toISOString().slice(0, 19);
+    const fechaEmision = new Date(factura.fecha_emision).toISOString().slice(0, 19);
+    const fechaDesdeFacturacion = new Date(factura.fecha_desde_facturacion).toISOString().split('T')[0];
+    const fechaHastaFacturacion = new Date(factura.fecha_hasta_facturacion).toISOString().split('T')[0];
+
+    // Adaptar el objeto factura a la estructura de FacturaConsulta del YAML
+    return {
+      id: factura.id,
+      uuid: factura.uuid,
+      numeroFactura: factura.numero_factura,
+      empresaId: factura.empresa_id,
+      facturaRectificadaId: factura.factura_rectificada_id,
+      baseImponible: factura.base_imponible,
+      iva: factura.iva,
+      moneda: factura.moneda,
+      tipo: factura.tipo,
+      estado: factura.estado,
+      esSubsanable: !!factura.es_subsanable,
+      haSidoSubsanada: !!factura.ha_sido_subsanada,
+      fechaRectificacion,
+      fechaEmision,
+      fechaDesdeFacturacion,
+      fechaHastaFacturacion
+    };
+  } catch (err) {
+    console.error("Error al consultar factura:", err);
+    throw err;
+  }
+};
 
 
 /**
@@ -43,19 +68,29 @@ exports.facturaEntidadConsultar = function(wSKey,numeroFactura,emailEmpresa) {
  * emailEmpresa String Email de la empresa
  * returns FacturaConsultaEstado
  **/
-exports.facturaEntidadConsultarEstado = function(wSKey,numeroFactura,emailEmpresa) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-  "estado" : "VALIDA"
-};
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
+exports.facturaEntidadConsultarEstado = async function(wSKey, numeroFactura, emailEmpresa) {
+  try {
+    await utils.validarWSKey(wSKey); 
+    const empresaId = await FacturaRepository.obtenerIdEmpresaPorEmail(emailEmpresa);
+    if (!empresaId) {
+      throw { status: 404,
+        error: "Empresa no encontrada" 
+      };
     }
-  });
-}
+
+    const estado = await FacturaRepository.obtenerEstadoFactura(numeroFactura, empresaId);
+    if (!estado) {
+      throw { status: 404,
+        error: "Factura no encontrada" 
+      };
+    }
+
+    return { estado };
+  } catch (err) {
+    console.error("Error al consultar estado de factura:", err);
+    throw err;
+  }
+};
 
 
 /**
@@ -65,7 +100,6 @@ exports.facturaEntidadConsultarEstado = function(wSKey,numeroFactura,emailEmpres
  * wSKey String Clave de autenticación WSKey
  * returns SuccessResponse
  **/
-const FacturaRepository = require('../ConexionDB/FacturaRepository');
 
 exports.facturaEntidadCrear = async function (body, wSKey) {
   try {

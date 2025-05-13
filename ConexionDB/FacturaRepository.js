@@ -56,5 +56,29 @@ exports.actualizarEstadoFactura = async (numeroFactura, emailEmpresa, nuevoEstad
   }
 };
 
+// Devuelve el ID de la empresa dado su email
+exports.obtenerIdEmpresaPorEmail = async (email) => {
+  const sql = `SELECT id FROM empresas WHERE email = ?`;
+  const [rows] = await db.execute(sql, [email]);
+
+  return rows.length > 0 ? rows[0].id : null;
+};
+
+// Devuelve todos los datos de una factura por número y empresa
+exports.obtenerFacturaPorNumeroYEmpresa = async (numeroFactura, empresaId) => {
+  const sql = `SELECT * FROM facturas WHERE numero_factura = ? AND empresa_id = ?`;
+  const [rows] = await db.execute(sql, [numeroFactura, empresaId]);
+
+  return rows.length > 0 ? rows[0] : null;
+};
+
+// Devuelve solo el estado de la factura
+exports.obtenerEstadoFactura = async (numeroFactura, empresaId) => {
+  const sql = `SELECT estado FROM facturas WHERE numero_factura = ? AND empresa_id = ?`;
+  const [rows] = await db.execute(sql, [numeroFactura, empresaId]);
+
+  return rows.length > 0 ? rows[0].estado : null;
+};
+
 
 
