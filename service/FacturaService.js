@@ -65,19 +65,21 @@ exports.facturaEntidadConsultarEstado = function(wSKey,numeroFactura,emailEmpres
  * wSKey String Clave de autenticación WSKey
  * returns SuccessResponse
  **/
-exports.facturaEntidadCrear = function(body,wSKey) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-  "mensaje" : "Operación realizada con éxito."
+const FacturaRepository = require('../ConexionDB/FacturaRepository');
+
+exports.facturaEntidadCrear = async function (body, wSKey) {
+  try {
+    const empresaId = body.empresaId;
+
+    await FacturaRepository.insertarFactura(body, empresaId);
+
+    return { mensaje: "Operación realizada con éxito." };
+  } catch (err) {
+    console.error("Error al crear la factura:", err);
+    throw { error: err.message || "Error interno del servidor" };
+  }
 };
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
-    }
-  });
-}
+
 
 
 /**
@@ -87,17 +89,17 @@ exports.facturaEntidadCrear = function(body,wSKey) {
  * wSKey String Clave de autenticación WSKey
  * returns SuccessResponse
  **/
-exports.facturaEntidadModificarEstado = function(body,wSKey) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-  "mensaje" : "Operación realizada con éxito."
+exports.facturaEntidadModificarEstado = async function(body, wSKey) {
+  try {
+    const { numeroFactura, emailEmpresa, estado } = body;
+
+    await FacturaRepository.actualizarEstadoFactura(numeroFactura, emailEmpresa, estado);
+
+    return { mensaje: "Operación realizada con éxito." };
+  } catch (error) {
+    console.error("Error al modificar el estado de la factura:", error);
+    throw { error: error.message || "Error interno del servidor" };
+  }
 };
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
-    }
-  });
-}
+
 
