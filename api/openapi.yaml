@@ -510,8 +510,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-      x-swagger-router-controller: notificacion-mensaje-utility
-  /documentos/exportar-xml/numero-factura/{numero-factura}/email-empresa/{email-empresa}:
+      x-swagger-router-controller: Notificacion
+  /documentos/exportar-xml/numero-factura/{numeroFactura}/email-empresa/{emailEmpresa}:
     post:
       tags:
       - Documento
@@ -527,7 +527,7 @@ paths:
         explode: false
         schema:
           type: string
-      - name: numero-factura
+      - name: numeroFactura
         in: path
         description: Número identificativo de la factura que se quiere exportar a XML.
         required: true
@@ -535,7 +535,7 @@ paths:
         explode: false
         schema:
           type: string
-      - name: email-empresa
+      - name: emailEmpresa
         in: path
         description: Email de la empresa
         required: true
@@ -617,8 +617,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-      x-swagger-router-controller: documento-exportar-factura-xml-utility
-  /documentos/exportar-pdf/numero-factura/{numero-factura}/email-empresa/{email-empresa}:
+      x-swagger-router-controller: Documento
+  /documentos/exportar-pdf/numero-factura/{numeroFactura}/email-empresa/{emailEmpresa}:
     post:
       tags:
       - Documento
@@ -634,7 +634,7 @@ paths:
         explode: false
         schema:
           type: string
-      - name: numero-factura
+      - name: numeroFactura
         in: path
         description: Número identificativo de la factura que se quiere exportar a PDF.
         required: true
@@ -642,7 +642,7 @@ paths:
         explode: false
         schema:
           type: string
-      - name: email-empresa
+      - name: emailEmpresa
         in: path
         description: Email de la empresa
         required: true
@@ -724,7 +724,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-      x-swagger-router-controller: documento-exportar-factura-pdf-utility
+      x-swagger-router-controller: Documento
   /validaciones/fechas:
     post:
       tags:
