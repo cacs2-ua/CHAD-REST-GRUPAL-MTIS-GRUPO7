@@ -14,6 +14,9 @@ node_modules/
 # package-lock.json
 # yarn.lock
 
+# Carpetas
+exported_xml/*
+
 # Logs
 logs/
 *.log
