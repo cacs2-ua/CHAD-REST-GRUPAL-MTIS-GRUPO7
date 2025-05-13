@@ -1466,7 +1466,11 @@ components:
         fechaEmision: "2025-05-10T14:30:50"
     FacturaConsulta:
       required:
+      - id
+      - uuid
       - numeroFactura
+      - empresaId
+      - facturaRectificadaId
       - baseImponible
       - iva
       - moneda
@@ -1474,14 +1478,28 @@ components:
       - estado
       - esSubsanable
       - haSidoSubsanada
+      - fechaRectificacion
       - fechaEmision
       - fechaDesdeFacturacion
       - fechaHastaFacturacion
       type: object
       properties:
+        id:
+          type: number
+          description: Id de la factura.
+        uuid:
+          type: string
+          description: Uuid de la factura.
         numeroFactura:
           type: string
           description: Número identificativo y único de la factura.
+        empresaId:
+          type: number
+          description: Id de la empresa.
+        facturaRectificadaId:
+          type: number
+          nullable: true
+          description: Id de la factura rectificada.
         baseImponible:
           type: number
           description: Base imponible de la factura.
@@ -1531,7 +1549,11 @@ components:
           format: date
           description: Fecha de que se corresponde con el final del periodo de facturación.
       example:
+        id: 23
+        uuid: "4af7fcd9-2e68-11f0-9444-0a002700000a"
         numeroFactura: "FAC-178965412674769490"
+        empresaId: 34
+        facturaRectificadaId: 21
         baseImponible: 1250.75
         iva: 0.21
         moneda: "EURO"
@@ -1562,7 +1584,6 @@ components:
       required:
       - numeroFactura
       - emailEmpresa
-      - estado
       type: object
       properties:
         numeroFactura:
@@ -1574,16 +1595,33 @@ components:
           description: Email de la empresa.
         estado:
           type: string
+          nullable: true
           description: "Estado de la factura ('VALIDA', 'RECTIFICADA', 'INVALIDA', 'ANULADA')."
           enum:
             - VALIDA
             - RECTIFICADA
             - INVALIDA
             - ANULADA
+        esSubsanable:
+          type: boolean
+          nullable: true
+          description: Flag que indica si una factura es subsanable.
+        haSidoSubsanada:
+          type: boolean
+          nullable: true
+          description: Flag que indica si una factura ha sido subsanada.
+        fechaRectificacion:
+          type: string
+          nullable: true
+          format: date-time
+          description: Fecha de retificacion de la factura.
       example:
         numeroFactura: "FAC-298392883290239871"
         emailEmpresa: "ntt@data.com"
         estado: "VALIDA"
+        esSubsanable: true
+        haSidoSubsanada: true
+        fechaRectificacion: "2025-05-01T11:45:56"
     SolicitudEmisionFactura:
       required:
       - nombreEmpresa
@@ -1592,6 +1630,8 @@ components:
       - identificadorEmpleador
       - ibanEmpresa
       - paisEmpresa
+      - provinciaEmpresa
+      - localidadEmpresa
       - direccionCompletaFacturacion
       - codigoPostal
       - numeroFactura
@@ -1680,6 +1720,8 @@ components:
       - identificadorEmpleador
       - ibanEmpresa
       - paisEmpresa
+      - provinciaEmpresa
+      - localidadEmpresa
       - direccionCompletaFacturacion
       - codigoPostal
       - numeroFactura
