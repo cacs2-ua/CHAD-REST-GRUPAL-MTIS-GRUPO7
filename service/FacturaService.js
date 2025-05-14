@@ -125,9 +125,23 @@ exports.facturaEntidadCrear = async function (body, wSKey) {
  **/
 exports.facturaEntidadModificarEstado = async function(body, wSKey) {
   try {
-    const { numeroFactura, emailEmpresa, estado } = body;
+    const {
+      numeroFactura,
+      emailEmpresa,
+      estado,
+      esSubsanable,
+      haSidoSubsanada,
+      fechaRectificacion
+    } = body;
 
-    await FacturaRepository.actualizarEstadoFactura(numeroFactura, emailEmpresa, estado);
+    await FacturaRepository.actualizarEstadoFactura(
+      numeroFactura,
+      emailEmpresa,
+      estado,
+      esSubsanable,
+      haSidoSubsanada,
+      fechaRectificacion
+    );
 
     return { mensaje: "Operación realizada con éxito." };
   } catch (error) {
@@ -135,5 +149,3 @@ exports.facturaEntidadModificarEstado = async function(body, wSKey) {
     throw { error: error.message || "Error interno del servidor" };
   }
 };
-
-

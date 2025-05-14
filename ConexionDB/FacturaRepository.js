@@ -35,30 +35,41 @@ exports.insertarFactura = async (factura, empresaId) => {
     factura.facturaRectificadaId ?? null
   ];
 
-  // Ejecutamos la consulta con la API basada en Promises
-  await db.execute(sql, valores);
+  await DB.connection.promise().execute(sql, valores);
 };
 
 // Actualiza el estado de una factura
-exports.actualizarEstadoFactura = async (numeroFactura, emailEmpresa, nuevoEstado) => {
+exports.actualizarEstadoFactura = async (numeroFactura, emailEmpresa, estado, esSubsanable, haSidoSubsanada, fechaRectificacion) => {
   const sql = `
     UPDATE facturas f
     JOIN empresas e ON f.empresa_id = e.id
-    SET f.estado = ?
+    SET 
+      f.estado = ?,
+      f.es_subsanable = ?,
+      f.ha_sido_subsanada = ?,
+      f.fecha_rectificacion = ?
     WHERE f.numero_factura = ? AND e.email = ?
   `;
 
-  const [resultado] = await db.execute(sql, [nuevoEstado, numeroFactura, emailEmpresa]);
+  const [resultado] = await DB.connection.promise().execute(sql, [
+    estado,
+    esSubsanable ?? false,
+    haSidoSubsanada ?? false,
+    fechaRectificacion ?? null,
+    numeroFactura,
+    emailEmpresa
+  ]);
 
   if (resultado.affectedRows === 0) {
     throw new Error('Factura no encontrada con ese número y email');
   }
 };
 
+
 // Devuelve el ID de la empresa dado su email
 exports.obtenerIdEmpresaPorEmail = async (email) => {
   const sql = `SELECT id FROM empresas WHERE email = ?`;
-  const [rows] = await db.execute(sql, [email]);
+  const [rows] = await DB.connection.promise().execute(sql, [email]);
 
   return rows.length > 0 ? rows[0].id : null;
 };
@@ -66,7 +77,7 @@ exports.obtenerIdEmpresaPorEmail = async (email) => {
 // Devuelve todos los datos de una factura por número y empresa
 exports.obtenerFacturaPorNumeroYEmpresa = async (numeroFactura, empresaId) => {
   const sql = `SELECT * FROM facturas WHERE numero_factura = ? AND empresa_id = ?`;
-  const [rows] = await db.execute(sql, [numeroFactura, empresaId]);
+  const [rows] = await DB.connection.promise().execute(sql, [numeroFactura, empresaId]);
 
   return rows.length > 0 ? rows[0] : null;
 };
@@ -74,12 +85,13 @@ exports.obtenerFacturaPorNumeroYEmpresa = async (numeroFactura, empresaId) => {
 // Devuelve solo el estado de la factura
 exports.obtenerEstadoFactura = async (numeroFactura, empresaId) => {
   const sql = `SELECT estado FROM facturas WHERE numero_factura = ? AND empresa_id = ?`;
-  const [rows] = await db.execute(sql, [numeroFactura, empresaId]);
+  const [rows] = await DB.connection.promise().execute(sql, [numeroFactura, empresaId]);
 
   return rows.length > 0 ? rows[0].estado : null;
 };
 
-function obtenerFacturaPorNumeroYMail(numero, mail) {
+// Devuelve una factura buscando por número y email (callback style)
+exports.obtenerFacturaPorNumeroYMail = function (numero, mail) {
   return new Promise((resolve, reject) => {
     const queryEmpresa = 'SELECT id FROM empresas WHERE email = ?';
     DB.connection.query(queryEmpresa, [mail], (errEmp, resEmp) => {
@@ -114,10 +126,4 @@ function obtenerFacturaPorNumeroYMail(numero, mail) {
       });
     });
   });
-}
-
-
-
-module.exports = {
-  obtenerFacturaPorNumeroYMail
 };
