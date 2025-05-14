@@ -1447,7 +1447,7 @@ components:
           description: Fecha en la que finaliza el periodo de facturación.
         fechaEmision:
           type: string
-          format: date
+          format: date-time
           description: Fecha en la que se ha emitido la factura.
       example:
         numeroFactura: "FAC-178965412674769490"

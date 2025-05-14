@@ -3,6 +3,10 @@
 const mysql = require('mysql2');
 const DB = require('./Conexion');
 
+function toMySQLDatetime(fecha) {
+  return fecha ? new Date(fecha).toISOString().slice(0, 19).replace('T', ' ') : null;
+}
+
 /**
  * Inserta una nueva factura en la tabla `facturas`.
  * @param {object} factura  Objeto que llega desde el servicio (coincide con el esquema OpenAPI)
@@ -28,10 +32,10 @@ exports.insertarFactura = async (factura, empresaId) => {
     factura.estado,
     factura.esSubsanable,
     factura.haSidoSubsanada ?? false,
-    factura.fechaRectificacion ?? null,
+    toMySQLDatetime(factura.fechaRectificacion),
     factura.fechaDesdeFacturacion,
     factura.fechaHastaFacturacion,
-    factura.fechaEmision,
+    toMySQLDatetime(factura.fechaEmision),
     factura.facturaRectificadaId ?? null
   ];
 
