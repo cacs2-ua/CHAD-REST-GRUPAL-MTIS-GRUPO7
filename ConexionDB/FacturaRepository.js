@@ -59,7 +59,7 @@ exports.actualizarEstadoFactura = async (numeroFactura, emailEmpresa, estado, es
     estado,
     esSubsanable ?? false,
     haSidoSubsanada ?? false,
-    fechaRectificacion ?? null,
+    toMySQLDatetime(fechaRectificacion),
     numeroFactura,
     emailEmpresa
   ]);
