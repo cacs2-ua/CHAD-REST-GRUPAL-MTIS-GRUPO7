@@ -101,18 +101,27 @@ exports.facturaEntidadConsultarEstado = async function(wSKey, numeroFactura, ema
  * returns SuccessResponse
  **/
 
-exports.facturaEntidadCrear = async function (body, wSKey) {
+exports.facturaEntidadCrear = async function(body, wSKey) {
   try {
-    const empresaId = body.empresaId;
+    await utils.validarWSKey(wSKey);  // ✅ Validamos la WSKey
 
-    await FacturaRepository.insertarFactura(body, empresaId);
+    const factura = body;
+    const empresaId = factura.empresaId;
 
-    return { mensaje: "Operación realizada con éxito." };
-  } catch (err) {
-    console.error("Error al crear la factura:", err);
-    throw { error: err.message || "Error interno del servidor" };
+    await FacturaRepository.insertarFactura(factura, empresaId);
+
+    return { mensaje: "Factura creada correctamente" };  // 🟢 ¡Esto es lo que Swagger espera!
+  } catch (error) {
+    console.error("Error al crear factura:", error);
+    throw {
+      status: error.status || 500,
+      error: error.salida || "Error interno del servidor"
+    };
   }
 };
+
+
+
 
 
 
@@ -125,6 +134,8 @@ exports.facturaEntidadCrear = async function (body, wSKey) {
  **/
 exports.facturaEntidadModificarEstado = async function(body, wSKey) {
   try {
+    await utils.validarWSKey(wSKey); // 👈 Validar WSKey aquí también
+
     const {
       numeroFactura,
       emailEmpresa,
@@ -149,3 +160,4 @@ exports.facturaEntidadModificarEstado = async function(body, wSKey) {
     throw { error: error.message || "Error interno del servidor" };
   }
 };
+
