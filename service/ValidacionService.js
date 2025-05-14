@@ -14,14 +14,12 @@ exports.fechas = function(body,wSKey) {
   return new Promise(async function(resolve, reject) {
     var result = {};
     result['application/json'] = {
-    "resultado" : true
+      "mensaje":{"resultado":true}
     };
     try {
       const WSKeyDb = await DB.obtenerRestKey();
       if (wSKey != WSKeyDb.valor){
-        return reject({
-          resultado : false
-        });
+        return reject({ mensaje: { error: "WSKey key no válida" }, status: 401 });
       }
       const fechaDesde = body.fechaDesde;
       const fechaHasta = body.fechaHasta;
@@ -29,13 +27,13 @@ exports.fechas = function(body,wSKey) {
 
     if (!regex.test(fechaDesde) || !regex.test(fechaHasta)) {
       return reject({
-        resultado : false
+        mensaje : {resultado : false }
       });
     }
     
     if(new Date(fechaDesde) >= new Date(fechaHasta)){
       return reject({
-        resultado : false
+        mensaje : {resultado : false }
       })
     }
 
@@ -47,8 +45,7 @@ exports.fechas = function(body,wSKey) {
     } catch (error) {
       return reject({
         status: 500,
-        mensaje: "Error de servidor.",
-        resultado : false
+        mensaje: "Error de servidor."
       })
     }
   });
@@ -66,14 +63,12 @@ exports.validacionEmpresaExiste = function(body,wSKey) {
   return new Promise(async function (resolve, reject) {
     var result = {};
     result['application/json'] = {
-      "resultado":true
+      "mensaje":{"resultado":true}
     };
     try {
       const WSKeyDb = await DB.obtenerRestKey();
       if (wSKey != WSKeyDb.valor){
-        return reject({
-          resultado : false
-        });
+        return reject({ mensaje: { error: "WSKey key no válida" }, status: 401 });
       }
       var email = body.email;
       //Regex para comprobar que es un email
@@ -81,14 +76,14 @@ exports.validacionEmpresaExiste = function(body,wSKey) {
 
       if (!email || !regex.test(email)){
         return reject({
-          resultado : false
+          mensaje : {resultado : false }
         });
       }
       var empresa = await DB.obtenerEmpresa(email);
 
       if(!empresa){
         return reject({
-          resultado : false
+          mensaje : {resultado : false }
         });
       }
 
@@ -103,7 +98,6 @@ exports.validacionEmpresaExiste = function(body,wSKey) {
       return reject({
         status: 500,
         mensaje: "Error de servidor.",
-        resultado : false
       })
     }
   });
@@ -121,14 +115,12 @@ exports.validacionFacturaExiste = function(body,wSKey) {
   return new Promise(async function(resolve, reject) {
     var result = {};
     result['application/json'] = {
-      "resultado":true
+      "mensaje":{"resultado":true}
     };
     try {
       const WSKeyDb = await DB.obtenerRestKey();
       if (wSKey != WSKeyDb.valor){
-        return reject({
-          resultado : false
-        });
+        return reject({ mensaje: { error: "WSKey key no válida" }, status: 401 });
       }
       var email = body.emailEmpresa;
       var numFactura = body.numeroFactura;
@@ -137,14 +129,14 @@ exports.validacionFacturaExiste = function(body,wSKey) {
 
       if (!email || !regex.test(email)){
         return reject({
-          resultado : false
+          mensaje : {resultado : false }
         });
       }
       var empresa = await DB.obtenerEmpresa(email);
 
       if(!empresa){
         return reject({
-          resultado : false
+          mensaje : {resultado : false }
         });
       }
 
@@ -152,7 +144,7 @@ exports.validacionFacturaExiste = function(body,wSKey) {
 
       if(!facturaDB){
         return reject({
-          resultado : false
+          mensaje : {resultado : false }
         });
       }
       
@@ -165,8 +157,7 @@ exports.validacionFacturaExiste = function(body,wSKey) {
       console.log(error);
       return reject({
         status: 500,
-        mensaje: "Error de servidor.",
-        resultado : false
+        mensaje: "Error de servidor."
       })
     }
   });
