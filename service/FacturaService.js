@@ -157,7 +157,10 @@ exports.facturaEntidadModificarEstado = async function(body, wSKey) {
     return { mensaje: "Operación realizada con éxito." };
   } catch (error) {
     console.error("Error al modificar el estado de la factura:", error);
-    throw { error: error.message || "Error interno del servidor" };
+  throw {
+    status: error.status || 500,  // ✅ AÑADE ESTO
+    error: error.salida || error.message || "Error interno del servidor"
+  };
   }
 };
 

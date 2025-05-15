@@ -31,7 +31,7 @@ exports.fechas = function(body,wSKey) {
       });
     }
     
-    if(new Date(fechaDesde) >= new Date(fechaHasta)){
+    if(new Date(fechaDesde) > new Date(fechaHasta)){
       return reject({
         mensaje : {resultado : false }
       })

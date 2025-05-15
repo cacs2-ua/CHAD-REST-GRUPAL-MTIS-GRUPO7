@@ -45,6 +45,6 @@ module.exports.facturaEntidadModificarEstado = async function facturaEntidadModi
     const response = await Factura.facturaEntidadModificarEstado(body, wSKey);
     utils.writeJson(res, response);
   } catch (error) {
-    utils.writeJson(res, error);
+    utils.writeJson(res, error, error.status || 500);
   }
 };
