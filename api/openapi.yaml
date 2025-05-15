@@ -115,7 +115,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
       x-swagger-router-controller: creacion-factura-entidad
-  /facturas/consultar/numero-factura/{numero-factura}/email-empresa/{email-empresa}:
+  /facturas/consultar/numeroFactura/{numeroFactura}/emailEmpresa/{emailEmpresa}:
     get:
       tags:
       - Factura
@@ -132,7 +132,7 @@ paths:
         explode: false
         schema:
           type: string
-      - name: numero-factura
+      - name: numeroFactura
         in: path
         description: Número identificativo de la factura que se quiere consultar
         required: true
@@ -140,7 +140,7 @@ paths:
         explode: false
         schema:
           type: string
-      - name: email-empresa
+      - name: emailEmpresa
         in: path
         description: Email de la empresa
         required: true
@@ -222,8 +222,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-      x-swagger-router-controller: consulta-factura-entidad
-  /facturas/consultar-estado/numero-factura/{numero-factura}/email-empresa/{email-empresa}:
+      x-swagger-router-controller: consulta-factura-estado-entidad
+  /facturas/consultar-estado/numeroFactura/{numeroFactura}/emailEmpresa/{emailEmpresa}:
     get:
       tags:
       - Factura
@@ -239,7 +239,7 @@ paths:
         explode: false
         schema:
           type: string
-      - name: numero-factura
+      - name: numeroFactura
         in: path
         description: Número identificativo de la factura de la que se quiere consultar el estado
         required: true
@@ -247,7 +247,7 @@ paths:
         explode: false
         schema:
           type: string
-      - name: email-empresa
+      - name: emailEmpresa
         in: path
         description: Email de la empresa
         required: true
@@ -810,7 +810,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-      x-swagger-router-controller: validacion-fechas-utility
+      x-swagger-router-controller: Validacion
       
   /validaciones/factura-existe:
     post:
@@ -906,7 +906,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-      x-swagger-router-controller: validacion-factura-existe-utility
+      x-swagger-router-controller: Validacion
   /validaciones/empresa-existe:
     post:
       tags:
@@ -1002,7 +1002,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-      x-swagger-router-controller: validacion-empresa-existe-utility
+      x-swagger-router-controller: Validacion
   /emision-facturas/iniciar:
     post:
       tags:
@@ -1447,7 +1447,7 @@ components:
           description: Fecha en la que finaliza el periodo de facturación.
         fechaEmision:
           type: string
-          format: date
+          format: date-time
           description: Fecha en la que se ha emitido la factura.
       example:
         numeroFactura: "FAC-178965412674769490"

@@ -23,22 +23,28 @@ module.exports.facturaEntidadConsultarEstado = function facturaEntidadConsultarE
     });
 };
 
-module.exports.facturaEntidadCrear = function facturaEntidadCrear (req, res, next, body, wSKey) {
-  Factura.facturaEntidadCrear(body, wSKey)
-    .then(function (response) {
-      utils.writeJson(res, response);
-    })
-    .catch(function (response) {
-      utils.writeJson(res, response);
-    });
+module.exports.facturaEntidadCrear = async function facturaEntidadCrear(req, res, next) {
+  const body = req.body;
+  const wSKey = req.headers['wskey'];
+
+  try {
+    const response = await Factura.facturaEntidadCrear(body, wSKey);
+    utils.writeJson(res, response);
+  } catch (error) {
+    utils.writeJson(res, error);
+  }
 };
 
-module.exports.facturaEntidadModificarEstado = function facturaEntidadModificarEstado (req, res, next, body, wSKey) {
-  Factura.facturaEntidadModificarEstado(body, wSKey)
-    .then(function (response) {
-      utils.writeJson(res, response);
-    })
-    .catch(function (response) {
-      utils.writeJson(res, response);
-    });
+
+
+module.exports.facturaEntidadModificarEstado = async function facturaEntidadModificarEstado(req, res, next) {
+  const body = req.body;
+  const wSKey = req.headers['wskey']; // ← importante: tomar de cabecera
+
+  try {
+    const response = await Factura.facturaEntidadModificarEstado(body, wSKey);
+    utils.writeJson(res, response);
+  } catch (error) {
+    utils.writeJson(res, error, error.status || 500);
+  }
 };
